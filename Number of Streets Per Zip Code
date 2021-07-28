@@ -1,0 +1,14 @@
+select business_postal_code, 
+count(
+
+        distinct case 
+        when left(business_address, 1) ~ '^[0-9]' 
+        then lower(split_part(business_address, ' ', 2)) 
+        else lower(split_part(business_address, ' ', 1))
+        end
+        ) as n_streets
+
+from sf_restaurant_health_violations
+where business_postal_code is not null
+group by business_postal_code
+order by n_streets desc, business_postal_code asc;
