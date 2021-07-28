@@ -1,0 +1,12 @@
+select 
+distinct
+a.poster,
+a.post_id,
+post_text,
+post_keywords,
+post_date
+from facebook_reactions a
+left join facebook_posts b
+on a.post_id = b.post_id
+
+where reaction = 'heart'
