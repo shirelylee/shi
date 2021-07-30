@@ -1,0 +1,182 @@
+SELECT 
+a.date,
+count(b.user_id_sender)/count(a.user_id_sender)::float as acceptance_rate
+FROM
+    (SELECT
+        user_id_sender,
+        user_id_receiver,
+        date,
+        action
+    FROM fb_friend_requests
+    WHERE action='sent') a
+LEFT JOIN 
+    (SELECT
+        user_id_sender,
+        user_id_receiver,
+        date,
+        action
+    FROM fb_friend_requests
+    WHERE action='accepted') b
+ON a.user_id_sender=b.user_id_sender and a.user_id_receiver=b.user_id_receiver
+GROUP BY a.date
+ORDER BY a.date DESC
+-------------------------------------------------------------------------------------------
+
+    WITH total_energy as 
+       (SELECT * 
+        FROM fb_eu_energy
+        UNION ALL 
+        SELECT *
+        FROM fb_asia_energy
+        UNION ALL
+        SELECT * 
+        FROM fb_na_energy),
+    energy_by_date as
+        (SELECT 
+        date,
+        sum(consumption) as total_energy
+        FROM total_energy
+        GROUP BY date
+        ORDER BY date ASC),
+     max_energy as (SELECT 
+        MAX(total_energy) as max_energy
+        FROM energy_by_date)
+    SELECT 
+    date,
+    total_energy
+    FROM energy_by_date as ebd
+    JOIN max_energy as me
+    on me.max_energy=ebd.total_energy
+--------------------------------------------------------------------------------------
+SELECT 
+SUM(
+    CASE 
+    WHEN position <=3
+    AND has_clicked='yes'
+    then 1
+    else 0
+    end
+)*100/count(search_id) as top_3_clicked,
+sum(
+    case 
+    when position<=3
+    and has_clicked='no'
+    then 1
+    else 0
+    end
+)*100/count(search_id) as top_3_notclicked
+from fb_search_events;
+-- select  
+-- sum(case when position<=3 and has_clicked='yes' then 1 else 0 end)*100/count(search_id) as top_3_clicked,
+-- sum(case when position<=3 and has_clicked='no' then 1 else 0 end)*100/count(search_id) as top_3_notclicked
+-- from fb_search_events;
+-----------------------------------------------------------------------------------------------------
+select distinct a.user_id
+from amazon_transactions as a
+join amazon_transactions as b
+on a.user_id=b.user_id
+and a.id<>b.id
+and a.created_at::date-b.created_at::date between -7 and 7
+order by user_id 
+ 
+------------------------------------------------------------------------------------------
+    
+    select 
+        cust_id,
+        sum(order_quantity*order_cost) as revenue
+    from orders
+    where order_date between '2019-03-01' and '2019-03-31'
+    group by cust_id
+    order by revenue desc
+---------------------------------------------------------------------------------
+    select 
+    business_name,
+    review_text
+    from
+    (select 
+    business_name,
+    review_text,
+    rank() over(order by cool desc) rnk
+    from yelp_reviews) s
+    where rnk = 1
+
+
+--------------------------------------------------------------------------------------
+select distinct business_name,
+    case
+    when business_name ilike '%school%' then 'school'
+    when business_name ilike '%cafe%' or business_name ilike '%coffee%' then 'cafe'
+    when business_name ilike '%restaurant%' then 'restaurant'
+    else 'other'
+    end as business_type
+from sf_restaurant_health_violations;
+-----------------------------------------------------------
+
+select unnest(string_to_array(categories, ';')),
+sum(review_count) as review_cnt
+from yelp_business
+group by 1
+order by review_cnt desc
+------------------------------------------------------------
+    select
+    first_name,
+    order_date,
+    order_details,
+    order_cost
+    from
+    (
+    select 
+    id,
+    first_name
+    from customers
+    where first_name = 'Jill' or first_name='Eva'
+    ) t
+    inner join orders as s
+    on s.cust_id=t.id
+    order by s.cust_id
+--------------------------------------------------------------
+select
+department,
+first_name,
+salary
+from
+    (select 
+    department,
+    first_name,
+    salary,
+    rank() over (partition by department order by salary desc) as rk
+    from employee) t
+    where rk=1
+    order by salary desc
+   -------------------------------------------------------------------
+    select first_name,
+    salary
+    from
+    (select id,first_name,
+    salary,
+    manager_id,
+    (
+        select salary
+        from employee
+        where id= manager_id
+    ) as manager_salary
+    from employee) t
+    where salary > manager_salary
+--------------------------------------------------
+select year,
+count(inspection_id)
+from
+    (
+    select
+    extract (year from inspection_date) as year,
+    inspection_id,
+    inspection_type,
+    violation_id,
+    violation_description
+    from sf_restaurant_health_violations
+    where
+    business_name='Roxanne Cafe'
+    ) t
+    group by year
+    order by year
+-----------------------------------------------------
