@@ -1,0 +1,12 @@
+select 
+-- airbnb_hosts.host_id,
+nationality,
+-- age,
+count(unit_id) as apartment_count
+from airbnb_hosts
+left join airbnb_units
+on airbnb_hosts.host_id=airbnb_units.host_id
+where age<30 and unit_type ='Apartment'
+group by airbnb_hosts.host_id,nationality
+order by apartment_count desc
+-- limit 1
