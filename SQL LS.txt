@@ -44,3 +44,23 @@ sum(n_messages) as sum_n_messages
 from airbnb_contacts
 group by id_guest
 order by sum_n_messages desc
+-----------------------------------------
+select worker_title as best_paid_title
+from 
+worker
+left join title
+on title.worker_ref_id=worker.worker_id
+where salary=(
+select
+max(salary)
+from worker
+)
+-------------------------------------------
+select games,
+count(distinct id) athletes_count
+
+from olympics_athletes_events
+group by games
+order by athletes_count desc
+limit 1
+------------------------------------
