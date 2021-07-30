@@ -1,0 +1,46 @@
+    SELECT first_name,target
+    FROM salesforce_employees
+    WHERE target IN
+        (select max(target)
+        from salesforce_employees
+        where manager_id = 13)
+    AND manager_id = 13;
+---------------------------------------------
+    with a as
+    (
+    select user_id,
+    date_trunc('day', timestamp) as date,
+    max(timestamp) as page_load
+    from 
+    facebook_web_log
+    where action='page_load'
+    group by user_id,date
+    ),
+    
+     b as
+    (
+    select user_id,date_trunc('day', timestamp) as date,
+    max(timestamp) as page_exit
+    from 
+    facebook_web_log
+    where action='page_exit'
+    group by user_id,date
+    )
+    select a.user_id,
+    avg(b.page_exit-a.page_load) as avg
+    from
+    b left join a
+    on a.user_id=b.user_id and a.date=b.date
+    group by a.user_id
+ 
+    
+ ----------------------------------------------------------------
+select 
+DENSE_RANK() OVER (
+		ORDER BY sum(n_messages) DESC
+	) ranking,
+id_guest,
+sum(n_messages) as sum_n_messages
+from airbnb_contacts
+group by id_guest
+order by sum_n_messages desc
