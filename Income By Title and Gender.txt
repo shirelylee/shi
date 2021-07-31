@@ -1,0 +1,15 @@
+select
+employee_title,
+sex,
+avg(salary+bonus.total) as avg_compensation
+from sf_employee
+inner join 
+    (
+select 
+    worker_ref_id,
+    sum(bonus) as total
+    from sf_bonus
+    group by worker_ref_id
+    ) bonus
+on sf_employee.id=bonus.worker_ref_id
+group by employee_title,sex
