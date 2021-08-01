@@ -5,3 +5,31 @@ from airbnb_hosts as a
 inner join airbnb_guests as b
 on a.nationality = b.nationality
 and a.gender=b.gender
+--------------------------------------------------------
+Julia asked her students to create some coding challenges. 
+Write a query to print the hacker_id, name, and the total number
+ of challenges created by each student. Sort your results by the 
+total number of challenges in descending order. If more than one 
+student created the same number of challenges, then sort the result 
+by hacker_id. If more than one student created the same number of 
+challenges and the count is less than the maximum number of challenges
+ created, then exclude those students from the result.
+---------------
+  with data as      
+        (select h.hacker_id as id,
+        h.name as name,
+        count(c.challenge_id) as counter
+        from Hackers h
+        left join Challenges c
+        on h.hacker_id=c.hacker_id
+        group by h.hacker_id,h.name)
+                 
+select id,name,counter
+from data
+where counter=(select max(counter) from data)
+or counter in (
+                select counter from data
+                group by counter 
+                having count(counter)=1
+)
+order by counter desc,id
