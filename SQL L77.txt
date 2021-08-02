@@ -1,0 +1,53 @@
+Julia asked her students to create some coding challenges. 
+Write a query to print the hacker_id, name, and the total number
+ of challenges created by each student. Sort your results by the 
+total number of challenges in descending order. If more than one 
+student created the same number of challenges, then sort the result 
+by hacker_id. If more than one student created the same number of 
+challenges and the count is less than the maximum number of challenges
+ created, then exclude those students from the result.
+---------------
+  with data as      
+        (select h.hacker_id as id,
+        h.name as name,
+        count(c.challenge_id) as counter
+        from Hackers h
+        left join Challenges c
+        on h.hacker_id=c.hacker_id
+        group by h.hacker_id,h.name)
+                 
+select id,name,counter
+from data
+where counter=(select max(counter) from data)
+or counter in (
+                select counter from data
+                group by counter 
+                having count(counter)=1
+)
+order by counter desc,id
+---------------------------------------------------------------------------
+
+The total score of a hacker is the sum of their maximum scores for all of the 
+challenges. Write a query to print the hacker_id, name, and total score of the
+ hackers ordered by the descending score. If more than one hacker achieved the 
+same total score, then sort the result by ascending hacker_id. Exclude all hackers 
+with a total score of  from your result.
+--------------------------
+with data as       
+        (select hacker_id,
+  	challenge_id,
+        max(score) as score
+        from Submissions
+        group by hacker_id,challenge_id)
+    
+select 
+    h.hacker_id  as id,
+    h.name as name,
+    -- d.challenge_id as ch_id,
+    sum(d.score) as score
+from Hackers h
+inner join data d
+ on h.hacker_id =d.hacker_id 
+ group by h.hacker_id,h.name
+ having (sum(d.score)) > 0
+ order by sum(d.score) desc,h.hacker_id
