@@ -1,0 +1,17 @@
+In general, use EXISTS when:
+
+You don't need to return data from the related table
+You have dupes in the related table (JOIN can cause duplicate rows if values are repeated)
+You want to check existence (use instead of LEFT OUTER JOIN...NULL condition)
+----------------------------------------------------
+
+select 
+id,
+name
+from 
+departments
+where exists(
+select 
+  price from sales where sales.department_id=departments.id and price>98
+)
+
