@@ -1,0 +1,11 @@
+LEFT JOIN LATERAL
+( 
+    SELECT title, views, id
+    FROM posts
+    WHERE category_id = c.id
+    ORDER BY views DESC
+    LIMIT 2) p 
+ON true
+    
+ORDER BY c.category, p.views DESC, post_id;
+
