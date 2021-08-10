@@ -1,0 +1,9 @@
+select p.name,
+count(case when d.detail = 'good' then 1 end) as good,
+count(case when d.detail = 'ok' then 1 end) as ok,
+count(case when d.detail = 'bad' then 1 end) as bad
+from products p
+inner join details d
+on p.id=d.product_id
+group by p.name
+order by p.name
