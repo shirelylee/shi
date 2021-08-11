@@ -1,0 +1,28 @@
+For this challenge you need to create a VIEW. This VIEW is used by a sales store to
+ give out vouches to members who have spent over $1000 in departments that have brought
+ in more than $10000 total ordered by the members id. The VIEW must be called members_approved_for_voucher 
+then you must create a SELECT query using the view.
+create view members_approved_for_voucher as
+
+select
+m.id,
+m.name,
+m.email,
+sum(p.price) as total_spending
+from members m
+inner join sales s on m.id=s.member_id
+inner join products p on p.id=s.product_id
+where s.department_id in(
+                          select s2.department_id
+                            from sales s2
+                            inner join products p2
+                            on s2.product_id=p2.id
+                            group by s2.department_id
+                            having sum(p2.price)>10000
+                        )
+group by m.id,m.name,m.email
+having sum(p.price) > 1000
+order by m.id;
+
+select * from
+members_approved_for_voucher;
