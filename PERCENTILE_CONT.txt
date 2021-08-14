@@ -1,0 +1,5 @@
+select 
+min(score) as min,
+max(score) as max,
+PERCENTILE_CONT(0.5) within group(order by score)as median
+from result
