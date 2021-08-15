@@ -1,0 +1,4 @@
+select 
+substring(project,1,commits) as project,
+right(address,contributors) as address
+from repositories 
