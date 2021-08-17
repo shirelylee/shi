@@ -1,0 +1,10 @@
+select 
+name,
+weight,
+price,
+ROUND((price*1000/weight)::decimal,2)::float as price_per_kg
+from products
+order by price_per_kg,name
+----------------------------
+
+Weight is in grams! Round the price_per_kg to 2 decimal places.
