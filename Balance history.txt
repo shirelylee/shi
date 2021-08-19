@@ -1,0 +1,18 @@
+-- Replace with your query (in pure SQL)
+ select date
+ ,sum(balance) over(order by date) as balance
+
+ from
+  (
+    select date(date) as date,
+  sum(amount) as balance
+  from operations
+  group by date(date)
+  order by date
+   ) as t
+-- order by date
+-------------------------------------
+
+You need to write a sql query that will 
+return the daily balance history from monetary
+ operations tables for all the time.
