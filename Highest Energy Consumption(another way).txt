@@ -1,0 +1,32 @@
+with total_energy as(
+select date,sum(consumption) as consumption
+from
+(
+select *
+from 
+fb_eu_energy
+union all
+select *
+from
+fb_asia_energy
+union all
+select *
+from
+fb_na_energy
+)a
+group by date
+order by date desc)
+,
+max_energy as(
+select
+max(consumption) as max_energy
+from total_energy
+)
+
+select
+total_energy.date,
+total_energy.consumption
+from total_energy
+ join max_energy 
+ on total_energy.consumption=max_energy.max_energy
+
