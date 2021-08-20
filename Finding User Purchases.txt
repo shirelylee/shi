@@ -1,0 +1,8 @@
+select distinct a.user_id
+from amazon_transactions as a
+join amazon_transactions as b
+on a.user_id=b.user_id
+and a.id<>b.id
+and a.created_at::date-b.created_at::date between -7 and 7
+order by user_id 
+ 
