@@ -1,0 +1,22 @@
+SELECT 
+a.date,
+count(b.user_id_sender)/count(a.user_id_sender)::float as acceptance_rate
+FROM
+    (SELECT
+        user_id_sender,
+        user_id_receiver,
+        date,
+        action
+    FROM fb_friend_requests
+    WHERE action='sent') a
+LEFT JOIN 
+    (SELECT
+        user_id_sender,
+        user_id_receiver,
+        date,
+        action
+    FROM fb_friend_requests
+    WHERE action='accepted') b
+ON a.user_id_sender=b.user_id_sender and a.user_id_receiver=b.user_id_receiver
+GROUP BY a.date
+ORDER BY a.date DESC
