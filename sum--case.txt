@@ -1,0 +1,22 @@
+SELECT 
+SUM(
+    CASE 
+    WHEN position <=3
+    AND has_clicked='yes'
+    then 1
+    else 0
+    end
+)*100/count(search_id) as top_3_clicked,
+sum(
+    case 
+    when position<=3
+    and has_clicked='no'
+    then 1
+    else 0
+    end
+)*100/count(search_id) as top_3_notclicked
+from fb_search_events;
+-- select  
+-- sum(case when position<=3 and has_clicked='yes' then 1 else 0 end)*100/count(search_id) as top_3_clicked,
+-- sum(case when position<=3 and has_clicked='no' then 1 else 0 end)*100/count(search_id) as top_3_notclicked
+-- from fb_search_events;
