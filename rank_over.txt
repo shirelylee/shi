@@ -1,0 +1,13 @@
+select
+a.business_name,
+review_text
+from
+    (select 
+    business_name,
+    review_text,
+    rank() over(order by cool desc) ranker
+    from yelp_reviews) a
+where a.ranker=1
+
+
+
