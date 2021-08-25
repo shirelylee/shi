@@ -1,0 +1,8 @@
+select distinct business_name,
+    case
+    when business_name ilike '%school%' then 'school'
+    when business_name ilike '%cafe%' or business_name ilike '%coffee%' then 'cafe'
+    when business_name ilike '%restaurant%' then 'restaurant'
+    else 'other'
+    end as business_type
+from sf_restaurant_health_violations; 
