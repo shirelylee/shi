@@ -1,0 +1,21 @@
+select
+department,
+first_name as employee_name,
+salary
+from
+    (select 
+        first_name,
+        department,
+        salary,
+        rank() over(
+            partition by department order by salary desc
+            )
+            from
+            employee
+       ) a
+       where rank=1
+
+
+
+
+
