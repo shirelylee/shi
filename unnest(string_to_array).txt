@@ -1,0 +1,6 @@
+select 
+unnest(string_to_array(categories,';')),
+sum(review_count) as review_total
+from yelp_business
+group by 1
+order by review_total desc
