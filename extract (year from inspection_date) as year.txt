@@ -1,0 +1,8 @@
+select 
+count(*) as n_inspections,
+extract (year from inspection_date) as year
+from sf_restaurant_health_violations
+where
+business_name='Roxanne Cafe'
+and violation_id!=' '
+group by year
