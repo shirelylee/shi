@@ -1,0 +1,13 @@
+ select
+ a.first_name,
+ a.target
+ from
+    (select 
+    first_name,
+    target,
+    rank() over(order by target desc) as ranker
+    from salesforce_employees
+    where
+    manager_id=13) a
+    where a.ranker=1
+
