@@ -6,3 +6,4 @@ where
 business_name='Roxanne Cafe'
 and violation_id!=' '
 group by year
+
