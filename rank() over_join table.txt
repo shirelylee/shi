@@ -1,0 +1,12 @@
+  select
+  a.worker_title as best_paid_title
+  from
+    (select 
+    worker_title,
+    rank() over(order by salary desc) as ranker
+    from worker w
+    left join
+    title t
+    on
+    w.worker_id=t.worker_ref_id) a
+where a.ranker=1
