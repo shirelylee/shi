@@ -1,0 +1,20 @@
+DO
+$$BEGIN 
+  EXECUTE FORMAT('CREATE TABLE product_pivot AS ' ||
+                 'SELECT * FROM CROSSTAB(%L, %L) AS CT(day DATE, %s)',
+                 'SELECT DATE_TRUNC(''day'', s.transaction_date) AS day,
+                         p.name,
+                         COUNT(*) cnt
+                    FROM sale    s,
+                         product p
+                   WHERE s.product_id = p.id
+                   GROUP BY DATE_TRUNC(''day'', s.transaction_date),
+                            p.name
+                   ORDER BY 1',
+                  'SELECT DISTINCT name FROM product ORDER BY 1',
+                  (SELECT STRING_AGG(REPLACE(name, ' ', '_') || ' text', ',')
+                     FROM product ORDER BY 1)
+         );
+END$$;
+
+SELECT * FROM product_pivot;
