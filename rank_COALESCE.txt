@@ -1,0 +1,26 @@
+The query must rank each clan by their total_points, 
+you must return each unqiue clan and if there is no clan 
+name (i.e. it's an empty string) you must replace it with [no clan specified]
+---------------------------------------------------
+
+COALESCE(NULLIF(clan,''), '[no clan specified]') AS clan
+----------------------------------------------------
+
+with total_points as
+(
+  select 
+  clan,
+  sum(points) as total_points,
+  count(*) as total_people
+  from
+  people
+  group by clan
+)
+
+select
+rank() over(order by total_points desc) as rank,
+COALESCE(NULLIF(clan,''), '[no clan specified]') AS clan,
+total_points,
+total_people
+from
+total_points
