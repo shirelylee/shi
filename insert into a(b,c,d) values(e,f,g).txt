@@ -1,0 +1,5 @@
+INSERT 
+into participants(name,age,attending)
+values('shi li',22,true);
+
+SELECT * FROM participants;
