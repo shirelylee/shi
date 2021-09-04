@@ -1,0 +1,22 @@
+-- WITH RECURSIVE fib(number,n2) AS (
+--       SELECT 0::bigint,1::bigint
+--     UNION ALL
+--       SELECT n2::bigint,number+n2::bigint 
+--       FROM fib
+-- )
+-- SELECT number FROM fib LIMIT 90
+
+-- f(n1,n2) as (
+-- select 0::bigint,1::bigint
+--   union all
+--   select n2::bigint,n1+n2::bigint
+--   from f
+-- )
+
+with RECURSIVE f(number,b) as(
+select 0::bigint,1::bigint
+  union all
+  select b::bigint,b+number::bigint
+  from f
+)
+SELECT number FROM f LIMIT 90
