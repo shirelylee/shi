@@ -1,0 +1,25 @@
+     a            |          b         |        a + b
+--------------+--------------+--------------
+ {11, 13, 17} | {19, 23, 29}    | {30, 36, 46}
+ {31, 37}       |   {41, 43, 47}  | {72, 80}
+ {53, 59, 61} | {67, 71}          | {120, 130}
+ {}                | {1, 2, 3}          | {}
+ {1, 2, 3}      | {}                    | {}
+---------------------------------------------------------------------
+CREATE FUNCTION vec_add (a int[], b int[]) RETURNS int[]
+AS $$
+  SELECT ARRAY(
+    SELECT a[i] + b[i]
+    FROM GENERATE_SUBSCRIPTS(a, 1) AS ss_a(i)
+    JOIN GENERATE_SUBSCRIPTS(b, 1) AS ss_b(j)
+    ON i = j
+  );
+$$
+LANGUAGE 'sql';
+
+CREATE OPERATOR + (
+  LEFTARG = int[],
+  RIGHTARG = int[],
+  PROCEDURE = vec_add
+);
+
