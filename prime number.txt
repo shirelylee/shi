@@ -1,0 +1,15 @@
+WITH x AS (
+  SELECT * FROM generate_series( 2, 100 ) x
+)
+SELECT x.x as prime
+FROM x
+WHERE NOT EXISTS (
+  SELECT x.x FROM x y
+  WHERE x.x > y.x AND x.x % y.x = 0
+能除开就不是素数，永远是大书除以小数
+)
+;
+----------------------------------------------
+SELECT * FROM generate_series( 2, 100 ) x  ---> 2.3.4.5....100
+2.3.4.5.6 x.x
+2.3.4.5.6 y.x
