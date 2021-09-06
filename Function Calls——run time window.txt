@@ -1,0 +1,20 @@
+The rules for the salary increase are encapsulated in the function pctIncrease, 
+which takes a department_id as a parameter and returns the percent increase as a value between 0 and 1.
+---------------------------------------------------------------------------------------
+
+SELECT e.employee_id,
+       e.first_name,
+       e.last_name,
+       d.department_name,
+       e.salary AS old_salary,
+       e.salary * d.pctinc AS new_salary
+  FROM employees   e,
+       (SELECT department_id,
+               department_name,
+               1 + pctIncrease(department_id) pctinc
+          FROM departments) d
+ WHERE e.department_id = d.department_id
+ ORDER BY 1;
+如果直接e.salary * （1 + pctIncrease(department_id)）  AS new_salary，运行会很慢，
+因为每一次都要算一次。而放在后面，可以一次性算出来所有的pctinc。然后直接把这些结果
+用到最后算new_salary
