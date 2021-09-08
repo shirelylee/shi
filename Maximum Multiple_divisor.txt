@@ -1,0 +1,5 @@
+
+select 
+(bound / divisor) * divisor AS res 
+from 
+max_multiple;
