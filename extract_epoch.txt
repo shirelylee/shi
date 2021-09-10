@@ -1,0 +1,9 @@
+select
+ login::date as day,
+ d.name as department_name,
+ extract('epoch' from sum(logout-login))/3600 as total_hours
+from department d
+join timesheet t
+on d.id=t.department_id
+group by day,department_id,d.name
+order by day,d.name
