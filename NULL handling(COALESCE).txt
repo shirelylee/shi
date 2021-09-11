@@ -8,3 +8,4 @@ select
 from eusales
 where
 price > 50
+-----------------------
