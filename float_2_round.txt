@@ -1,10 +1,12 @@
 SELECT 
-  j.job_title,
-  round(avg(salary),2)::float as average_salary,
+   j.job_title as job_title,
+ round(avg(j.salary),2)::float as average_salary,
   COUNT(p.id) as total_people,
   round(SUM(j.salary),2)::float as total_salary
   FROM people p
-    JOIN job j
-    on p.id=j.people_id
+    JOIN job j on p.id=j.people_id
   GROUP BY j.job_title
-  ORDER BY total_salary desc
+  ORDER BY average_salary desc
+-------------------------------
+j.job_title as job_title is very important!!!!when 
+you grroup by.. u can use job_title directly
