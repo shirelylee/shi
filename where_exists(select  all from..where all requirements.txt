@@ -1,0 +1,12 @@
+select
+id,
+name
+from departments d
+where EXISTS 
+(
+select
+  *
+  from sales s
+  where d.id=s.department_id and 
+  price > 98
+)
