@@ -1,0 +1,27 @@
+select
+c.id as category_id,
+c.category as category,
+p.title,
+p.views,
+p.id as post_id
+from
+categories c
+left join
+(
+   select 
+  *,
+  ROW_NUMBER() over(partition by category_id order by views desc,id) rnk
+  from
+  posts 
+)p
+on c.id=p.category_id
+where coalesce(rnk,0)<=2
+order by category,p.views desc,post_id
+-------------------------------------------------
+Some categories may have less than two or no posts at all.
+category need to be the main one. left join posts.
+--------------------------------
+Two or more posts within the category can be tied by (have the same) the
+ number of views. Use post id as a tie breaker - a post with a lower id gets 
+a higher rank.
+
