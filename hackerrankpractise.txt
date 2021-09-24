@@ -1,0 +1,235 @@
+def is_leap(year):
+    leap = False
+    if (year%4==0 ): 
+        leap=True
+        if (year%100==0):  
+            leap=False
+            if(year%400==0): 
+                leap=True
+    
+    return leap
+
+year = int(input())
+print(is_leap(year))
+-------------------------------------------------
+Query the list of CITY names from STATION that do not start with vowels and do not end with vowels. Your result cannot contain duplicates.
+
+SELECT DISTINCT CITY FROM STATION 
+WHERE CITY regexp '^[^aeiouAEIOU].*.[^aeiouAEIOU]$'
+ORDER BY CITY
+--------------------------------------------------
+
+select (case 
+        when not (a + b > c and b + c > a and c + a > b) then "Not A Triangle"
+        when a = b and b = c then "Equilateral"
+        when a = b or b = c or c = a then "Isosceles"
+else "Scalene" end) from TRIANGLES;
+三角形
+--------------------------------------------
+
+The PADS----
+
+select concat(Name, '(', substring(Occupation, 1, 1), ')') 
+from OCCUPATIONS order by Name asc;
+select concat("There are a total of ", cast(count(*) as char), " ", lower(Occupation), "s.") 
+from OCCUPATIONS group by Occupation 
+order by count(*) asc;
+---------------------------------------------------------------------------------------
+Occupations---
+select
+    Doctor
+    ,Professor
+    ,Singer
+    ,Actor
+from (
+select
+    NameOrder
+    ,max(case Occupation when 'Doctor' then Name end) as Doctor
+    ,max(case Occupation when 'Professor' then Name end) as Professor
+    ,max(case Occupation when 'Singer' then Name end) as Singer
+    ,max(case Occupation when 'Actor' then Name end) as Actor
+from (
+    select
+        Occupation
+        ,Name
+        ,row_number() over(partition by Occupation order by Name ASC) as NameOrder
+    from Occupations
+    ) as NameLists
+    group by NameOrder
+) as Names
+---------------------------------------------------
+
+Binary Tree Nodes----
+SELECT N, 
+case
+when P is null then 'Root'
+when N in (select P from BST) then 'Inner'
+else 'Leaf'
+END
+FROM BST
+ORDER BY N
+-----------------------------------------------------------
+prime number <10
+
+WITH PRIME AS
+(
+ SELECT 2 AS PRIMENUMBER
+    UNION ALL
+    SELECT A.PRIMENUMBER+1 AS VALUE
+    FROM PRIME A
+    WHERE A.PRIMENUMBER<1000
+)
+SELECT PRIMENUMBER
+FROM PRIME A
+WHERE NOT EXISTS(
+SELECT 1 FROM PRIME B
+    WHERE A.PRIMENUMBER%B.PRIMENUMBER=0
+    AND A.PRIMENUMBER!=B.PRIMENUMBER
+)
+
+----------------------------------------------------
+
+prime number <1000
+
+DECLARE @table TABLE (PrimeNumber INT)
+
+DECLARE @final AS VARCHAR(1500)
+SET @final = ''
+
+DECLARE @counter INT
+SET @counter = 2
+
+WHILE @counter <= 1000
+  BEGIN
+      IF NOT EXISTS (SELECT primenumber
+                     FROM   @table
+                     WHERE  @counter % primenumber = 0)
+        BEGIN
+            INSERT INTO @table
+            SELECT @counter
+
+            SET @final = @final + Cast(@counter AS VARCHAR(20)) + '&'
+        END
+
+      SET @counter = @counter + 1
+  END
+
+SELECT Substring(@final, 0, Len(@final));
+--------------------------------------------------
+The Blunder
+
+SELECT CEILING(AVG(SALARY) - AVG(REPLACE(SALARY,'0','') )) FROM Employees;
+
+--------------------------------------------
+Top Earners
+
+select months*salary,count(*) from Employee group by 1 desc limit 1
+
+--------------------------------------------------------
+Weather Observation Station 15
+
+SELECT ROUND(LONG_W,4)
+FROM STATION
+WHERE LAT_N = (
+    SELECT
+    MAX(LAT_N)
+    FROM STATION
+WHERE LAT_N < 137.2345)
+-----------------------------------------
+Weather Observation Station 19
+
+SELECT
+cast(SQRT(SQUARE(MIN(LAT_N)-MAX(LAT_N)) + SQUARE(MIN(LONG_W)-MAX(LONG_W))) as decimal(8,4))
+
+FROM 
+STATION
+----------------------------------------------
+Weather Observation Station 20
+
+
+SELECT round(AVG(1.0 * LAT_N),4)
+FROM
+(
+  SELECT LAT_N,
+        ROW_NUMBER() OVER (ORDER BY LAT_N, id)  as ra,
+        ROW_NUMBER() OVER (ORDER BY LAT_N DESC, id DESC)  as rd
+    
+   FROM STATION
+) AS x
+WHERE x.ra >= x.rd - 1 AND x.ra <= x.rd + 1;
+-------------------------------------------------------
+The Report
+
+SELECT IF(GRADE < 8, NULL, NAME), GRADE, MARKS
+FROM STUDENTS JOIN GRADES
+WHERE MARKS>=MIN_MARK AND MARKS<=MAX_MARK
+ORDER BY GRADE DESC, NAME
+-----------------------------------------------------------
+Top Competitors
+
+
+SELECT h.hacker_id,h.name
+FROM Hackers AS h 
+inner join
+        ( 
+           SELECT s.hacker_id,count(*) as cnt
+                FROM Challenges  as c
+                INNER JOIN Difficulty as d
+                on c.difficulty_level= d.difficulty_level
+                INNER JOIN Submissions as s
+                on c.challenge_id=s.challenge_id
+           WHERE s.score = d.score
+           GROUP BY s.hacker_id
+           having count(*)>1
+        ) AS ch
+    on h.hacker_id=ch.hacker_id
+
+ORDER BY 
+ch.cnt desc,
+h.hacker_id
+---------------------------------------------------
+Ollivander's Inventory
+
+/*
+Enter your query here.
+Please append a semicolon ";" at the end of the query and enter your query in a single line to avoid error.
+*/
+;WITH MN AS
+(
+    SELECT
+        DISTINCT
+        w.code,
+        power,
+        age,
+        min(coins_needed) AS cn
+    FROM
+        Wands AS w
+    INNER JOIN
+        Wands_Property AS p
+    ON
+        w.code = p.code AND
+        p.is_evil = 0
+    GROUP BY
+        w.code,
+        power,
+        age
+)
+SELECT
+    w.id,
+    m.age,
+    m.cn,
+    m.power
+FROM
+    Wands AS w
+INNER JOIN
+    MN AS m
+ON
+    w.coins_needed = m.cn AND
+    w.power = m.power AND
+    w.code = m.code
+ORDER BY
+    m.power DESC,
+    m.age DESC
+
+
+
