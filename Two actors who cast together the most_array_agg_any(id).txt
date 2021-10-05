@@ -1,0 +1,23 @@
+select
+concat(b.first_name,' ',b.last_name) as first_actor,
+concat(c.first_name,' ',c.last_name) as second_actor,
+film.title
+from
+(select
+a1.actor_id as actor1,
+a2.actor_id as actor2,
+ array_agg(a1.film_id) as title_id,
+count(a1.film_id) as c
+from film_actor a1,
+  film_actor a2
+where
+a1.film_id=a2.film_id
+and a1.actor_id<> a2.actor_id
+group by a1.actor_id,a2.actor_id
+order by c desc 
+limit 1)ac
+join actor b on b.actor_id=ac.actor1
+join actor c on c.actor_id=ac.actor2
+join film on film.film_id=any(title_id)
+
+
