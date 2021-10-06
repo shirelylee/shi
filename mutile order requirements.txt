@@ -1,0 +1,20 @@
+select
+c.id as category_id,
+category,
+title,
+views,
+t.id as post_id
+from
+categories c
+left join 
+(select
+*,
+row_number() over(partition by  category_id order by  views desc,id)
+as rnk
+from
+posts p)t
+on c.id=t.category_id
+where coalesce(rnk,0)<=2
+order by category,rnk
+----------------------------------------------
+practise get feel!!!
