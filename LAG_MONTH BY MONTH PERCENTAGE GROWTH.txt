@@ -1,0 +1,24 @@
+with one as
+(select
+to_char(date(created_at),'YYYY-MM-01') as date,
+count(*)::float as count
+from
+posts
+group by date
+order by date),
+previous as
+(
+  select
+  date,
+  count,
+  lag(count,1) over(order by date) as prev_month
+  from one
+--   order by date
+)
+
+select
+date::DATE,
+count::INT,
+to_char((((count-prev_month)/prev_month)*100), 'FM9990.0%') as percent_growth
+from previous
+order by date
