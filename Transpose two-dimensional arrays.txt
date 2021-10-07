@@ -55,4 +55,6 @@ GROUP BY
 ORDER BY
     rn;
 --------------------------------------------
-metrix changeable!!!for any table
+metrices changeable!!!for any table
+
+matrix is text array
