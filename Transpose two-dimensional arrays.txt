@@ -57,4 +57,4 @@ ORDER BY
 --------------------------------------------
 metrices changeable!!!for any table
 
-matrix is text array
+matrix is text array - column
