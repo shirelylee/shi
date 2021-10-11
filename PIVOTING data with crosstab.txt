@@ -1,0 +1,16 @@
+CREATE EXTENSION tablefunc;
+select
+*
+from
+crosstab(
+'
+  select p.name,detail,count(d.id)
+  from products p
+  join details d
+  on p.id=d.product_id
+  group by p.name,detail
+  order by p.name,detail
+  '
+)
+as ct(
+name text, bad bigint,good bigint,ok bigint)
