@@ -1,0 +1,27 @@
+with recursive f(n, fact) as (
+  select 0, 1::bigint
+  union all
+  select n + 1, fact * (n + 1)
+  from f
+)
+select n, fact
+from f
+limit 17
+-------------------------------
+
+SELECT 
+    0, 
+    DATENAME(DW, 0)
+
+SELECT    
+        n + 1, 
+        DATENAME(DW, n + 1)
+    FROM    
+        cte_numbers
+    WHERE n < 6
+
+fitst select is  0,1   becasue when n is 0, the fact should be 1..
+second select
+n+1, algorithm ..
+in this practise algorithm is fact*(n+1)
+
