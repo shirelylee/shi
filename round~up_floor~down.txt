@@ -1,0 +1,11 @@
+
+SELECT 
+id,
+hours,
+floor(0.5*hours) as liters
+FROM cycling
+
+----------------------------------------
+
+round ~~ rounded to the largest value.
+floor~~rounded to the smallest value.
