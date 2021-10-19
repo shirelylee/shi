@@ -1,0 +1,6 @@
+INSERT into participants
+values('shi li',
+28,
+true);
+
+SELECT * FROM participants;
