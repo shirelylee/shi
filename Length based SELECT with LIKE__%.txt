@@ -1,0 +1,10 @@
+select
+first_name,
+last_name
+from
+names
+where
+first_name like '%______%'
+--------------------------
+6 _ 
+ the count of " _ " is six
