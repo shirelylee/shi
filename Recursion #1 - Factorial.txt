@@ -8,7 +8,6 @@ select n, fact
 from f
 limit 17
 -------------------------------
-
 SELECT 
     0, 
     DATENAME(DW, 0)
