@@ -1,0 +1,4 @@
+var nar = { 1 : 1, 2 : 1}
+
+const fibonacci = n => nar[n] || (nar[n] = fibonacci(n - 1) + fibonacci(n - 2))
+
