@@ -1,0 +1,21 @@
+111222344  rank
+111446688 dense_rank
+------------------------------------
+
+CREATE FUNCTION getNthHighestSalary(N INT) RETURNS INT
+BEGIN
+  RETURN (
+   
+      
+      with EmployeeSalaryRank as
+      (
+      select ID,Salary,
+      dense_rank() over (order by Salary Desc) as ranks
+      from Employee
+      )
+      
+      select distinct Salary
+      from EmployeeSalaryRank
+      where ranks=N
+  );
+END
