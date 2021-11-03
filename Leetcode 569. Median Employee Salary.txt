@@ -1,0 +1,7 @@
+SELECT id, company, salary
+*,
+COUNT() OVER (PARTITION BY company) cnt
+ROW_NUMBER OVER (PARTITION BY company ORDER BY salary) rnum
+FROM employee e
+WHERE (cnt/2) <= rnum AND rnum<= (cnt/2) + 1
+ORDER BY company, salary
