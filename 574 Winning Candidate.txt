@@ -1,0 +1,14 @@
+select name,
+from 
+candidate c
+inner join
+(select
+candidateid,
+count(*) 
+from vote
+group by candidateid
+order by count(*) desc
+limit 1) a
+
+on
+c.id=a.candidateid
