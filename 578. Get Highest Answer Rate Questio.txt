@@ -1,0 +1,13 @@
+
+select 
+question_id as survey_log
+from(
+select question_id,
+sum(if(action='show',1,0)) as num_show,
+sum(if(action='answer',1,0)) as num_answer
+from
+survey_log
+group by question_id) as t
+
+order by (num_show/num_anwer) desc
+limit1
