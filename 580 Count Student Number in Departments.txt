@@ -1,13 +1,25 @@
+select
+dept_name,
+count(student_id) as student_number
+from
+department as d
+left join
+student  as s
+on d.dept_id=s.dept_id
+group by dept_name(dept_id?)
+order by student_number desc,dept_name
+------------------------------------------------------------
 
 select 
-question_id as survey_log
-from(
-select question_id,
-sum(if(action='show',1,0)) as num_show,
-sum(if(action='answer',1,0)) as num_answer
-from
-survey_log
-group by question_id) as t
-
-order by (num_show/num_anwer) desc
-limit1
+    a.dept_name,
+    coalesce(count(student_id), 0) student_number
+from 
+    department a 
+left join
+    student b
+on 
+    (a.dept_id = b.dept_id)
+group by a.dept_name
+order by student_number desc, a.dept_name asc;
+------------------
+use coalesce, use count(*),the same result, when no student in that apartment, the result is 0
