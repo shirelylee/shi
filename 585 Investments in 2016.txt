@@ -1,0 +1,27 @@
+
+select 
+    sum(tiv_2016)
+from
+    insurance a 
+    left outer join  
+    (select 
+          b.lat, 
+          b.lon 
+     from 
+          insurance b 
+     group by b.lat, b.lon 
+     having count(*) > 1) c 
+
+         on (a.lat = c.lat and a.lon = c.lon) 
+     left outer join
+     (select 
+           d.tiv_2015 
+      from 
+           insurance d 
+      group by d.tiv_2015 
+      having count(*) > 1) e 
+         on (a.tiv_2015 = e.tiv_2015)
+where 
+    c.lat is null and 
+    c.lon is null and 
+    e.tiv_2015 is not null;
