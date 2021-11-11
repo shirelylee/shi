@@ -1,0 +1,15 @@
+SELECT 
+    a.requester_id id, 
+    (SELECT
+        count(1) 
+    FROM 
+        request_accepted b 
+    WHERE
+        b.accepter_id = a.requester_id OR
+        b.requester_id = a.requester_id
+    ) num 
+FROM
+    request_accepted a 
+ORDER BY
+    num DESC 
+LIMIT 1
