@@ -1,0 +1,14 @@
+select
+    distinct b.follower, c.count num 
+from 
+    follow b 
+    join 
+        (select
+            a.followee, count(distinct follower) count 
+         from 
+            follow a 
+         group by a.followee) c
+on (b.follower = c.followee)
+order by b.follower 
+------------------------------
+follower's follower...
