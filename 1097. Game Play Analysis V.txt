@@ -1,0 +1,13 @@
+select a.event_date as install_dt,count(a.player_id) as inistalls,
+round(count(b.player_id)/count(a.player_id),2) as day1_retention from
+(
+select player_id,min (event_date) as event_date from activity group by player_id
+)a
+left join activity b on a.player_id=b.player_id and a.event_date +1=b.event_date
+group by a.event_date
+--------------------
+left join
+than if next day no login, it will be null ...becasue of the left join...
+have all  the player_id in a. so the right side b has some is null, when the player_id
+ did not login next day
+so when count(b.player_id)    null =0
