@@ -1,14 +1,23 @@
+select Books.book_id, name from Books join Orders
+    on Books.book_id = Orders.book_id
+    where available_from < '2019-05-23'
+    and dispatch_date between '2018-06-23' and '2019-06-23'
+    group by Books.book_id
+    having sum(quantity) < 10
+    union
+select book_id, name from Books
+    where available_from < '2019-05-23'
+    and book_id not in (
+        select distinct book_id from Orders where dispatch_date between '2018-06-23' and '2019-06-23'
+    );
+--------------------------------------
+If a book has been sold less than 10 copies, then there are two cases. The first case is that 
+the book has been sold at least 1 copy but less than
+ 10 copies. The second case is that the book has never been sold.
+For the second case, select the books such that the book_id values are not in Orders.
 
---------------------------------
-select
-book_id,name
-from books
-where book_in not in(
-select
-book_id
-from orders
-where dispatch_date>='2018-06-23' and dispatch_date<='2019-06-22'
-group by book_id
-having sum(quantity)>=10
-)
-and available_from<='2019-05-22'
+The selection criteria also include that available_from is more than 1 month from the given date, and dispatch_date is in the last year.
+
+
+
+
