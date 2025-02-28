@@ -1,0 +1,20 @@
+LAG()/LEAD() 处理连续日期区间，类似“连续登录”问题变体。
+
+WITH ProjectGroups AS(
+SELECT
+        Start_Date,
+        End_Date,
+        DATE_ADD(Start_Date, INTERVAL -ROW_NUMBER() OVER (ORDER BY Start_Date) DAY) AS GroupID
+    FROM
+        Projects
+)
+SELECT
+MIN(Start_Date) AS Project_Start_Date,
+MAX(End_Date) AS Project_End_Date
+FROM
+ProjectGroups
+GROUP BY
+GroupID
+ORDER BY 
+DATEDIFF(MAX(End_Date),MIN(Start_Date)),
+MIN(Start_Date);
