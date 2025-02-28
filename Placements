@@ -1,0 +1,18 @@
+hacker_ranker
+------------
+select
+s.name
+from
+Students s
+inner join
+Friends f on s.ID=f.ID
+inner join
+Packages p
+on f.Friend_ID=p.ID
+inner join
+Packages pp
+on pp.ID=f.ID
+where 
+pp.Salary<p.Salary
+order by
+p.Salary
