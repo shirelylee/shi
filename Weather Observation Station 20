@@ -1,0 +1,11 @@
+SELECT ROUND(AVG(LAT_N),4) AS median
+FROM(
+    SELECT
+    LAT_N,
+    @row_num :=@row_num+1 AS row_num,
+    (SELECT COUNT(*) FROM STATION) AS total
+    FROM STATION,
+    (SELECT @row_num := -1) AS r
+    ORDER BY LAT_N
+) AS ordered
+WHERE row_num IN ((FLOOR(total-1)/2),CEIL((total-1)/2));
