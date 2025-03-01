@@ -1,0 +1,22 @@
+/*
+Enter your query below.
+Please append a semicolon ";" at the end of the query
+*/
+SELECT
+emp_id,
+SUM(daily_hours) AS work_hours
+FROM
+    (
+    SELECT
+    emp_id,
+    DATE(timestamp) AS work_date,
+    TIMESTAMPDIFF(HOUR,MIN(timestamp),MAX(timestamp)) AS daily_hours
+    FROM
+    attendance
+    WHERE
+    DAYOFWEEK(timestamp) IN(1,7)
+    GROUP BY emp_id,DATE(timestamp)
+    ) daily_work
+
+GROUP BY emp_id
+ORDER BY work_hours DESC
