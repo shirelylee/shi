@@ -1,0 +1,15 @@
+/*
+Enter your query below.
+Please append a semicolon ";" at the end of the query
+*/
+SELECT
+MONTH (record_date) AS month,
+MAX(data_value) AS max,
+MIN(data_value) AS min,
+ROUND(AVG(
+    CASE WHEN 
+    data_type='avg' THEN data_value END)
+    
+    )AS avg
+FROM temperature_records
+GROUP BY month
