@@ -1,0 +1,37 @@
+WITH prime_baches AS (SELECT 
+item_type,
+SUM(square_footage) AS total_sqft
+FROM inventory
+WHERE item_type='prime_eligible'
+GROUP BY item_type
+),
+
+
+non_prime_baches AS (SELECT 
+item_type,
+SUM(square_footage) AS total_sqft
+FROM inventory
+WHERE item_type='not_prime'
+GROUP BY item_type
+)
+,
+
+max_prime AS (
+SELECT FLOOR(500000/total_sqft) AS max_prime_baches
+FROM prime_baches
+),
+remaining_sqft AS (
+SELECT 500000-(max_prime_baches*(SELECT total_sqft FROM prime_baches)) AS remaining
+FROM max_prime
+),
+
+max_non_prime AS (
+SELECT FLOOR(remaining/(SELECT total_sqft FROM non_prime_baches)) AS max_non_prime_baches
+FROM remaining_sqft
+)
+
+SELECT 'prime_eligible' AS item_type,max_prime_baches AS item_count
+FROM max_prime
+UNION ALL SELECT 'not_prime' AS item_type,max_non_prime_baches AS item_count
+FROM
+max_non_prime;
