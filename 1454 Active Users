@@ -1,0 +1,56 @@
+-- 步骤1：创建CTE预处理数据，标记连续登录区间
+WITH LoginGroups AS (
+    SELECT 
+        user_id,
+        login_date,
+        -- 核心技巧：用登录日期减去行号差值，连续日期会得到相同标记
+        DATE_SUB(
+            login_date, 
+            INTERVAL ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY login_date) DAY
+        ) AS group_tag
+    FROM 
+        user_logins
+    -- 去重，避免同一用户同一天多次登录干扰
+    GROUP BY user_id, login_date
+),
+
+-- 步骤2：计算每个连续区间的开始和结束日期
+ContinuousPeriods AS (
+    SELECT 
+        user_id,
+        group_tag,
+        -- 连续登录区间的开始日期
+        MIN(login_date) AS start_date,
+        -- 连续登录区间的结束日期
+        MAX(login_date) AS end_date,
+        -- 计算连续登录天数（含间隔）
+        DATEDIFF(MAX(login_date), MIN(login_date)) + 1 AS consecutive_days
+    FROM 
+        LoginGroups
+    GROUP BY 
+        user_id, group_tag
+    -- 过滤出连续登录≥3天的用户
+    HAVING 
+        consecutive_days >= 3
+)
+
+-- 步骤3：最终输出，关联用户总活跃天数
+SELECT 
+    u.user_id,
+    -- 总活跃天数（从原始表统计）
+    COUNT(DISTINCT l.login_date) AS total_active_days,
+    -- 最长连续登录天数
+    MAX(cp.consecutive_days) AS max_consecutive_days
+FROM 
+    users u
+LEFT JOIN 
+    user_logins l ON u.user_id = l.user_id
+LEFT JOIN 
+    ContinuousPeriods cp ON u.user_id = cp.user_id
+-- 过滤条件：至少有一次连续3天登录
+WHERE 
+    cp.user_id IS NOT NULL
+GROUP BY 
+    u.user_id
+ORDER BY 
+    u.user_id;
