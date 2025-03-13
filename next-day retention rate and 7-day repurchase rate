@@ -1,0 +1,89 @@
+-- 步骤1：定义每日新增用户（首次登录用户）
+WITH FirstLogin AS (
+    SELECT 
+        user_id,
+        MIN(login_date) AS first_login_date  -- 确定每个用户的首次登录日期
+    FROM 
+        user_logins
+    GROUP BY 
+        user_id
+),
+
+-- 步骤2：计算次日留存用户（标记是否次日活跃）
+RetentionData AS (
+    SELECT 
+        fl.first_login_date,
+        fl.user_id,
+        -- 检查次日是否有登录：存在则为1，否则0
+        CASE WHEN ul.login_date = DATE_ADD(fl.first_login_date, INTERVAL 1 DAY) 
+             THEN 1 ELSE 0 END AS retained_next_day
+    FROM 
+        FirstLogin fl
+    LEFT JOIN 
+        user_logins ul ON fl.user_id = ul.user_id
+),
+
+-- 步骤3：计算每日新增用户的次日留存率
+DailyRetention AS (
+    SELECT 
+        first_login_date,
+        -- 留存率 = 次日活跃用户数 / 当日新增用户数
+        ROUND(
+            SUM(retained_next_day) * 100.0 / COUNT(DISTINCT user_id), 
+            2
+        ) AS retention_rate
+    FROM 
+        RetentionData
+    GROUP BY 
+        first_login_date
+),
+
+-- 步骤4：定义首单用户（首次下单用户）
+FirstOrder AS (
+    SELECT 
+        user_id,
+        MIN(order_date) AS first_order_date  -- 用户首次下单日期
+    FROM 
+        orders
+    GROUP BY 
+        user_id
+),
+
+-- 步骤5：计算7日内复购用户（标记是否复购）
+RepurchaseData AS (
+    SELECT 
+        fo.user_id,
+        fo.first_order_date,
+        -- 检查7天内是否有其他订单：存在则为1，否则0
+        CASE WHEN EXISTS (
+            SELECT 1 
+            FROM orders o 
+            WHERE o.user_id = fo.user_id 
+              AND o.order_date BETWEEN fo.first_order_date 
+                                    AND DATE_ADD(fo.first_order_date, INTERVAL 7 DAY)
+             THEN 1 ELSE 0 END AS repurchased_within_7d
+    FROM 
+        FirstOrder fo
+)
+
+-- 步骤6：最终输出结果
+SELECT 
+    (SELECT retention_rate FROM DailyRetention ORDER BY first_login_date DESC LIMIT 1) 
+        AS latest_retention_rate,
+    ROUND(
+        (SELECT SUM(repurchased_within_7d) * 100.0 / COUNT(*) FROM RepurchaseData), 
+        2
+    ) AS repurchase_rate;
+-------------------------------------------------
+排除窗口未关闭用户--如果需要--debug过程
+RepurchaseData AS (
+    SELECT 
+        fo.user_id,
+        -- 仅统计首次下单日期在7天前的用户（确保窗口关闭）
+        CASE WHEN fo.first_order_date <= CURRENT_DATE - 7 DAYS THEN 
+            CASE WHEN EXISTS (...)
+                 THEN 1 ELSE 0 END
+        ELSE NULL END AS repurchased_within_7d
+    FROM 
+        FirstOrder fo
+)
